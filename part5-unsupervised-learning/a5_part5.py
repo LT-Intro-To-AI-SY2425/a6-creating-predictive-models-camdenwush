@@ -2,33 +2,44 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
+import numpy as np
 
-#imports the data
+# import the data
 data = pd.read_csv("part5-unsupervised-learning/customer_data.csv")
 x = data[["Annual Income", "Spending Score"]]
 
-#standardize the data
+# standardize the data
+standardized = StandardScaler().fit_transform(x)
 
-
-#the value of k has been defined for you
+# define the number of clusters
 k = 5
 
-#apply the kmeans algorithm
+# apply the KMeans algorithm
+km = KMeans(n_clusters=k, random_state=42).fit(standardized)
 
+# get the centroid and label values
+centroids = km.cluster_centers_
+labels = km.labels_
 
-#get the centroid and label values
+print("Standardized Data:")
+print(standardized)
+print("\nCluster Labels:")
+print(labels)
 
+# set the size of the graph
+plt.figure(figsize=(10, 6))
 
-#sets the size of the graph
-plt.figure(figsize=(5,4))
+# plot the data points in each cluster
+for i in range(k):
+    cluster = standardized[np.where(labels == i)]
+    plt.scatter(cluster[:, 0], cluster[:, 1], label=f'Cluster {i+1}')
 
-#use a for loop to plot the data points in each cluster
+# plot the centroids
+plt.scatter(centroids[:, 0], centroids[:, 1], marker="x", s=100, c="purple", label="Centroid")
 
-
-#plot the centroids
-
-            
-#shows the graph
-plt.xlabel("Annual Income")
-plt.ylabel("Spending Score")
+# display the graph
+plt.xlabel("Annual Income (standardized)")
+plt.ylabel("Spending Score (standardized)")
+plt.legend()
+plt.title("K-Means Clustering of Customer Data")
 plt.show()
